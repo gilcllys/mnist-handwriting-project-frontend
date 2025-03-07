@@ -1,0 +1,12 @@
+.container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    video {
+      width: 100%;
+      max-width: 600px;
+      border: 2px solid white;
+      border-radius: 10px;
+    }

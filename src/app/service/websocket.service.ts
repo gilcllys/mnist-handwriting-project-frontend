@@ -8,36 +8,49 @@ export class WebsocketService {
 
   private socket!: WebSocket;
   private messageSubject: Subject<string> = new Subject<string>();
+  private websocketUrl = 'ws://localhost:8000/ws';
 
-  // constructor() {
-  //   this.connect();
-  // }
+  constructor() {
+  }
 
-  // private connect(): void {
-  //   this.socket = new WebSocket('ws://localhost:8000/ws');
+  connect() {
+    this.socket = new WebSocket(this.websocketUrl);
 
-  //   this.socket.onmessage = (event) => {
-  //     this.messageSubject.next(event.data);
-  //   };
+    this.socket.onopen = () => {
+      console.log('Conectado ao WebSocket');
+    };
 
-  //   this.socket.onerror = (error) => {
-  //     console.error('WebSocket error:', error);
-  //   };
+    this.socket.onmessage = (event) => {
+      const message = event.data;
+      this.messageSubject.next(message);
+    };
 
-  //   this.socket.onclose = () => {
-  //     console.log('WebSocket connection closed');
-  //   };
-  // }
+    this.socket.onerror = (error) => {
+      console.error('Erro no WebSocket:', error);
+    };
 
-  // public sendMessage(message: string): void {
-  //   if (this.socket.readyState === WebSocket.OPEN) {
-  //     this.socket.send(message);
-  //   } else {
-  //     console.error('WebSocket is not open.');
-  //   }
-  // }
+    this.socket.onclose = () => {
+      console.log('Conexão WebSocket fechada');
+    };
+  }
 
-  // public getMessages(): Observable<string> {
-  //   return this.messageSubject.asObservable();
-  // }
+  sendMessage(message: any) {
+    if (this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(message);
+    } else {
+      console.warn('WebSocket não está conectado. Tentando reconectar...');
+      this.connect();
+    }
+  }
+
+  close() {
+    if (this.socket) {
+      this.socket.close();
+    }
+  }
+
+  // Método para observar as respostas do servidor
+  receiveMessages(): Observable<string> {
+    return this.messageSubject.asObservable();
+  }
 }

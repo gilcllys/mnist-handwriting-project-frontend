@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
+interface PredictionMessage {
+  predicted_number: number;
+  predicted_accuracy: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
 
   private socket!: WebSocket;
-  private messageSubject: Subject<string> = new Subject<string>();
+  private messageSubject: Subject<PredictionMessage> = new Subject<PredictionMessage>();
   private websocketUrl = 'ws://localhost:8000/ws';
 
   constructor() {
@@ -21,7 +26,7 @@ export class WebsocketService {
     };
 
     this.socket.onmessage = (event) => {
-      const message = event.data;
+      const message = JSON.parse(event.data);
       this.messageSubject.next(message);
     };
 
@@ -36,7 +41,7 @@ export class WebsocketService {
 
   sendMessage(message: any) {
     if (this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(message);
+      this.socket.send(JSON.stringify(message));
     } else {
       console.warn('WebSocket não está conectado. Tentando reconectar...');
       this.connect();
@@ -50,7 +55,7 @@ export class WebsocketService {
   }
 
   // Método para observar as respostas do servidor
-  receiveMessages(): Observable<string> {
+  receiveMessages(): Observable<PredictionMessage> {
     return this.messageSubject.asObservable();
   }
 }

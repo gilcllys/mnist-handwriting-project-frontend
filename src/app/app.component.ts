@@ -3,6 +3,11 @@ import { Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, ViewChil
 import { RouterOutlet } from '@angular/router';
 import { WebsocketService } from './service/websocket.service';
 
+interface PredictionMessage {
+  predicted_number: number;
+  predicted_accuracy: number;
+}
+
 
 @Component({
   selector: 'app-root',
@@ -14,6 +19,9 @@ import { WebsocketService } from './service/websocket.service';
 export class AppComponent implements OnInit, OnDestroy {
   private captureInterval: any;
   prediciton: string = '';
+
+  predictedNumber: string = '';
+  predictedAccuracy: string = '0';
 
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef;
 
@@ -61,10 +69,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+
+
   receiveMessages(): void {
-    this.websocketService.receiveMessages().subscribe((message) => {
-      this.prediciton = message;
-      console.log(message);
+    this.websocketService.receiveMessages().subscribe((data: PredictionMessage) => {
+      this.predictedNumber = data.predicted_number.toString();
+      this.predictedAccuracy = (data.predicted_accuracy * 100).toFixed(2).toString();
+      console.log(data);
     });
   }
 

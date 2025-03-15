@@ -31,12 +31,13 @@ export class AppComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService
   ) { }
 
-
-
   async ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
+      // start the websocket connection
       this.websocketService.connect();
+      // start the camera
       await this.startCamera();
+      // start the process to receive messages from the backend
       this.receiveMessages();
     }
   }
@@ -46,17 +47,16 @@ export class AppComponent implements OnInit, OnDestroy {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         this.videoElement.nativeElement.srcObject = stream;
-
         this.preProcessedImage();
-        // Inicia o envio das imagens a cada 2 segundos
+        // Send image to the backend every 2 seconds
         this.captureInterval = setInterval(() => {
           this.sendImage();
         }, 2000);
       } catch (err) {
-        console.error('Erro ao acessar a câmera:', err);
+        console.error('Erro to acess the camera:', err);
       }
     } else {
-      console.error('API de mídia não suportada neste ambiente.');
+      console.error('API not supported in this enviroment');
     }
   }
 
@@ -64,14 +64,13 @@ export class AppComponent implements OnInit, OnDestroy {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     if (context) {
-      canvas.width = 500;
-      canvas.height = 500;
+      canvas.width = 200;
+      canvas.height = 200;
       context.drawImage(this.videoElement.nativeElement, 0, 0, canvas.width, canvas.height);
-      // Aplica o filtro de escala de cinza antes de enviar
+      // We apply the gray scale filter before sending the image to the backend
       this.applyGrayFiler({ nativeElement: canvas }, context);
       const image = canvas.toDataURL('image/jpeg');
-      const imageData =
-        this.websocketService.sendMessage(image);
+      const imageData = this.websocketService.sendMessage(image);
     }
   }
 
@@ -83,8 +82,8 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
+  // This function show us the result of the pre process image
   private preProcessedImage(): void {
-    // iniciando o canvas
     this.ctx = this.canvasElement.nativeElement.getContext('2d');
     if (this.ctx) {
       setInterval(() => {
@@ -95,23 +94,22 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private applyGrayFiler(canvas: ElementRef, context: CanvasRenderingContext2D): void {
-    // Obtém os pixels da imagem
     const imageData = context.getImageData(0, 0, canvas.nativeElement.width, canvas.nativeElement.height);
     const pixels = imageData!.data;
 
-    // Aplica o filtro de escala de cinza
+    // Apply the gray scale filter
     for (let i = 0; i < pixels.length; i += 4) {
       const r = pixels[i];
       const g = pixels[i + 1];
       const b = pixels[i + 2];
 
-      // Fórmula para converter em escala de cinza
+      // Formula to convert RGB to gray scale
       const gray = 0.299 * r + 0.587 * g + 0.114 * b;
 
-      pixels[i] = pixels[i + 1] = pixels[i + 2] = gray; // Define RGB como a mesma intensidade
+      pixels[i] = pixels[i + 1] = pixels[i + 2] = gray; // Define RGB with the same intensity
     }
 
-    // Atualiza o canvas com a imagem em escala de cinza
+    // Updated canvas with the pre process image
     context.putImageData(imageData!, 0, 0);
   }
 

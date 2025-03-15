@@ -43,7 +43,7 @@ export class WebsocketService {
     if (this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify(message));
     } else {
-      console.warn('WebSocket não está conectado. Tentando reconectar...');
+      console.warn('WebSocket is not connected. Trying to reconnect...');
       this.connect();
     }
   }

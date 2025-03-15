@@ -18,12 +18,13 @@ interface PredictionMessage {
 })
 export class AppComponent implements OnInit, OnDestroy {
   private captureInterval: any;
-  prediciton: string = '';
 
   predictedNumber: string = '';
   predictedAccuracy: string = '0';
 
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef;
+  @ViewChild('processedCanvas', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
+  private ctx!: CanvasRenderingContext2D | null;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
@@ -45,6 +46,8 @@ export class AppComponent implements OnInit, OnDestroy {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         this.videoElement.nativeElement.srcObject = stream;
+
+        this.preProcessedImage();
         // Inicia o envio das imagens a cada 2 segundos
         this.captureInterval = setInterval(() => {
           this.sendImage();
@@ -61,22 +64,55 @@ export class AppComponent implements OnInit, OnDestroy {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     if (context) {
-      canvas.width = 28;
-      canvas.height = 28;
+      canvas.width = 500;
+      canvas.height = 500;
       context.drawImage(this.videoElement.nativeElement, 0, 0, canvas.width, canvas.height);
+      // Aplica o filtro de escala de cinza antes de enviar
+      this.applyGrayFiler({ nativeElement: canvas }, context);
       const image = canvas.toDataURL('image/jpeg');
-      this.websocketService.sendMessage(image);
+      const imageData =
+        this.websocketService.sendMessage(image);
     }
   }
-
 
 
   receiveMessages(): void {
     this.websocketService.receiveMessages().subscribe((data: PredictionMessage) => {
       this.predictedNumber = data.predicted_number.toString();
       this.predictedAccuracy = (data.predicted_accuracy * 100).toFixed(2).toString();
-      console.log(data);
     });
+  }
+
+  private preProcessedImage(): void {
+    // iniciando o canvas
+    this.ctx = this.canvasElement.nativeElement.getContext('2d');
+    if (this.ctx) {
+      setInterval(() => {
+        this.ctx?.drawImage(this.videoElement.nativeElement, 0, 0, 500, 450);
+        this.applyGrayFiler(this.canvasElement, this.ctx!);
+      }, 2000);
+    }
+  }
+
+  private applyGrayFiler(canvas: ElementRef, context: CanvasRenderingContext2D): void {
+    // Obtém os pixels da imagem
+    const imageData = context.getImageData(0, 0, canvas.nativeElement.width, canvas.nativeElement.height);
+    const pixels = imageData!.data;
+
+    // Aplica o filtro de escala de cinza
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+
+      // Fórmula para converter em escala de cinza
+      const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+      pixels[i] = pixels[i + 1] = pixels[i + 2] = gray; // Define RGB como a mesma intensidade
+    }
+
+    // Atualiza o canvas com a imagem em escala de cinza
+    context.putImageData(imageData!, 0, 0);
   }
 
 

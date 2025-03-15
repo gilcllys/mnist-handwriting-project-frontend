@@ -1,5 +1,14 @@
 <div class="container">
-  <video #videoElement autoplay></video>
+  <div class="images">
+    <div class="original">
+      <h3>Original Image</h3>
+      <video #videoElement autoplay></video>
+    </div>
+    <div class="processed">
+      <h3>Pre processed Image</h3>
+      <canvas #processedCanvas width="500" height="450"></canvas>
+    </div>
+  </div>
   <div class="predictions">
     <h1>Predict Number: {{predictedNumber}}</h1>
     <h1>Accuracy: {{predictedAccuracy}} %</h1>

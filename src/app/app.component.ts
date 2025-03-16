@@ -1,7 +1,9 @@
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Route, Router, RouterOutlet } from '@angular/router';
 import { WebsocketService } from './service/websocket.service';
+import { DeviceDetectorService } from './service/device-detector.service';
+import { MobileNotSupportedComponent } from "./components/mobile-not-supported/mobile-not-supported.component";
 
 interface PredictionMessage {
   predicted_number: number;
@@ -12,12 +14,13 @@ interface PredictionMessage {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, MobileNotSupportedComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit, OnDestroy {
   private captureInterval: any;
+  hasDevice: boolean = false;
 
   predictedNumber: string = '';
   predictedAccuracy: string = '0';
@@ -28,7 +31,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private deviceDetector: DeviceDetectorService,
+    private router: Router
   ) { }
 
   async ngOnInit() {
@@ -39,6 +44,8 @@ export class AppComponent implements OnInit, OnDestroy {
       await this.startCamera();
       // start the process to receive messages from the backend
       this.receiveMessages();
+      this.checkdevice();
+
     }
   }
 
@@ -121,5 +128,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.websocketService.close();
   }
 
+  checkdevice(): void {
+    if (this.deviceDetector.isMobileDevice()) {
+      this.router.navigate(['/mobile-not-supported']);
+    }
+  }
 
 }

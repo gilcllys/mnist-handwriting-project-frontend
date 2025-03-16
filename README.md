@@ -1,27 +1,91 @@
-# HandwritingFrontend
+# Digit Recognition App (Frontend) / Aplicativo de Reconhecimento de Dígitos (Frontend)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.10.
+![Application Screenshot](./assets/preview.png)
 
-## Development server
+## 🌐 Português
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### 📖 Descrição 
+Este frontend Angular conecta-se a um ***backend em Python com FastAPI*** via WebSocket para reconhecimento de dígitos manuscritos em tempo real usando a ***base de dados MNIST***. Usuários podem desenhar dígitos no canvas, e o sistema fará previsões usando um modelo de machine learning treinado com dados do MNIST.
 
-## Code scaffolding
+### 🔗 Backend Integration
+- **Repositório do backend**: [MNIST Handwriting Project Backend](https://github.com/gilcllys/mnist-handwriting-project-backend)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### ✨ Funcionalidades
+- Comunicação em tempo real via WebSocket
+- Canvas interativo com função de limpar
+- Exibição de previsões e confiança do modelo
+- Comparação lado a lado da imagem original e pré-processada
+- Integração com dataset MNIST para reconhecimento preciso
 
-## Build
+### 🛠️ Instalação
+1. Clone o repositório:
+  ```bash
+   git clone https://github.com/gilcllys/mnist-handwriting-project-frontend.git
+```
+2. Instale as dependências:
+  ```bash
+   npm install
+```
+3. Inicie a aplicação Angular:
+  ```bash
+    ng serve
+```
+4. Backend Necessário: Clone e execute o [serviço backend](https://github.com/gilcllys/mnist-handwriting-project-backend) para funcionalidade completa.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### 🧠 Arquitetura do Projeto
+  ```bash
+  Frontend (Angular) ↔ WebSocket ↔ Backend (Python) ↔ Modelo treinado com MNIST
+```
 
-## Running unit tests
+### 🔧 Tecnologias Utilizadas
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- **Frontend**: Angular 15+, RxJS, HTML5 Canvas
 
-## Running end-to-end tests
+- **Backend**: Python, WebSocket, Machine Learning (dataset MNIST)
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- **Comunicação**: Protocolo WebSocket para interação em tempo real
 
-## Further help
+---
+## 🌐 English
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### 📖 Description
+This Angular frontend application connects to a **Python backend** via WebSocket to perform real-time handwritten digit recognition using the **MNIST dataset**. Users can draw a digit on the canvas, and the system will predict it using a machine learning model trained on MNIST data.
+
+### 🔗 Backend Integration
+- **Backend Repository**: [MNIST Handwriting Project Backend](https://github.com/gilcllys/mnist-handwriting-project-backend)
+- **Backend Documentation**: Complete documentation and implementation details are available in the backend repository.
+
+### ✨ Features
+- Real-time WebSocket communication
+- Interactive drawing canvas with clear functionality
+- Display of predictions and model confidence
+- Side-by-side comparison of original and pre-processed images
+- MNIST dataset integration for accurate digit recognition
+
+### 🛠️ Installation
+1. Clone the repository:
+  ```bash
+   git clone [your-frontend-repository-url]
+```
+2. Install dependencies:
+  ```bash
+   npm install
+```
+3. Start the Angular application:
+  ```bash
+    ng serve
+```
+4. Backend Required: Clone and run the [backend service](https://github.com/gilcllys/mnist-handwriting-project-backend) for full functionality.
+
+### 🧠 Project Architecture
+  ```bash
+  Frontend (Angular) ↔ WebSocket ↔ Backend (Python) ↔ MNIST-trained Model
+```
+
+### 🔧 Technologies Used
+
+- **Frontend**: Angular 15+, RxJS, HTML5 Canvas
+
+- **Backend**: Python, WebSocket, Machine Learning (dataset MNIST)
+
+- **Comunicação**: WebSocket protocol for real-time interaction

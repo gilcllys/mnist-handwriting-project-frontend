@@ -24,6 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   predictedNumber: string = '';
   predictedAccuracy: string = '0';
+  IntervalToSend: number = 1500;
 
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef;
   @ViewChild('processedCanvas', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
@@ -58,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // Send image to the backend every 2 seconds
         this.captureInterval = setInterval(() => {
           this.sendImage();
-        }, 2000);
+        }, this.IntervalToSend);
       } catch (err) {
         console.error('Erro to acess the camera:', err);
       }
@@ -96,7 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
       setInterval(() => {
         this.ctx?.drawImage(this.videoElement.nativeElement, 0, 0, 500, 450);
         this.applyGrayFiler(this.canvasElement, this.ctx!);
-      }, 2000);
+      }, this.IntervalToSend);
     }
   }
 
